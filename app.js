@@ -26,6 +26,9 @@ app.use('/cards', routerCards)
 app.get('*', (req,res) => {
   return res.status(404).send({message: 'Введен не коректный путь'});
 })
+app.patch('*', (req,res) => {
+  return res.status(404).send({message: 'Введен не коректный путь'});
+})
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
