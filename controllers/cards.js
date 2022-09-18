@@ -42,11 +42,17 @@ const addLikeCard = (req,res) => {
       $addToSet: { likes: req.user._id },
     },
   )
-    .then((card) => res.status(200).send(card))
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({message: 'Карточка с указанным _id не найдена.'});
+      }
+      res.send(card);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({message: '404 — Передан несуществующий _id карточки.'});
+        return res.status(400).send({message: 'Переданы некорректные данные для постановки лайка.'});
       }
+      return err
     });
 }
 
@@ -59,11 +65,16 @@ const deleteLikeCard = (req, res) => {
   )
     .then((card) => {
       if(!card) {
-        return res.status(400).send({message: ' — Карточка с указанным _id не найдена./снятии лайка. 404 — Передан несуществующий _id карточки.'});
+        return res.status(404).send({message: 'Карточка с указанным _id не найдена.'});
       }
       res.send(card);
     })
-    .catch(err => res.status(500).send({ message: err }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({message: 'Переданы некорректные данные для снятия лайка.'});
+      }
+      return err
+    });
 }
 
 module.exports = {
