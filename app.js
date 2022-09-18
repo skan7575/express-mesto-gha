@@ -18,7 +18,7 @@ app.use((req, res, next) => {
     _id: '6326eb50ad555905aca2ad65' // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
   next();
-});
+})
 
 app.use('/users', routerUsers);
 app.use('/cards', routerCards)
