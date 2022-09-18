@@ -15,7 +15,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6324499fe6103a5471450ee2' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '6326eb50ad555905aca2ad65' // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
   next();
 });
@@ -24,7 +24,7 @@ app.use('/users', routerUsers);
 app.use('/cards', routerCards)
 
 app.get('*', (req,res) => {
-  return res.status(400).send({message: 'Введен не коректный путь'});
+  return res.status(404).send({message: 'Введен не коректный путь'});
 })
 
 app.listen(PORT, () => {

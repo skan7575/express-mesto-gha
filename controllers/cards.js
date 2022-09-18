@@ -42,13 +42,12 @@ const addLikeCard = (req,res) => {
       $addToSet: { likes: req.user._id },
     },
   )
-    .then((card)=> {
-      if(!card) {
-        return res.status(400).send({message: ' Передан несуществующий _id карточки./снятии лайка. 404 — Передан несуществующий _id карточки.'});
+    .then((card) => res.status(200).send(card))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({message: '404 — Передан несуществующий _id карточки.'});
       }
-      res.send(card);
-    })
-    .catch(err => res.status(500).send({ message: err }));
+    });
 }
 
 const deleteLikeCard = (req, res) => {
