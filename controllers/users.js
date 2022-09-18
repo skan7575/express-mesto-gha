@@ -40,7 +40,7 @@ const createUser = (req, res, next) => {
   })
     .catch((err)=> {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные при создании пользователя.'));
+        return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
       }
       next(err);
     })
