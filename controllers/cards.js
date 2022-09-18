@@ -28,11 +28,16 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card)=> {
       if (!card) {
-        return res.status(404).send({message: ' Карточка с указанным _id не найдена.'});
+        return res.status(404).send({message: 'Карточка с указанным _id не найдена.'});
       }
       res.send(card)
     })
-    .catch(err => res.status(500).send({ message: err }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({message: 'Карточка с указанным _id не найдена.'});
+      }
+      return err
+    });
 };
 
 const addLikeCard = (req,res) => {
