@@ -23,6 +23,9 @@ app.use((req, res, next) => {
 app.use('/users', routerUsers);
 app.use('/cards', routerCards)
 
+app.get('*', (req,res) => {
+  return res.status(400).send({message: 'Введен не коректный путь'});
+})
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
