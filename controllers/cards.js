@@ -44,7 +44,7 @@ const addLikeCard = (req,res) => {
   )
     .then((card)=> {
       if(!card) {
-        return res.status(404).send({message: ' Передан несуществующий _id карточки./снятии лайка. 404 — Передан несуществующий _id карточки.'});
+        return res.status(400).send({message: ' Передан несуществующий _id карточки./снятии лайка. 404 — Передан несуществующий _id карточки.'});
       }
       res.send(card);
     })
@@ -60,7 +60,7 @@ const deleteLikeCard = (req, res) => {
   )
     .then((card) => {
       if(!card) {
-        return res.status(404).send({message: ' — Карточка с указанным _id не найдена./снятии лайка. 404 — Передан несуществующий _id карточки.'});
+        return res.status(400).send({message: ' — Карточка с указанным _id не найдена./снятии лайка. 404 — Передан несуществующий _id карточки.'});
       }
       res.send(card);
     })

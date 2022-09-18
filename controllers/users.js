@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
       }
-      next(err);
+      next(err => res.status(500).send({ message: err }));
     })
 
 
@@ -65,10 +65,9 @@ const updateUser = async (req, res, next) => {
   }
   catch (err) {
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные при обновлении профиля.'));
-    } else {
-      next(err);
+      return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
     }
+    next(err => res.status(500).send({ message: err }));
   }
 }
 
@@ -91,18 +90,16 @@ const updateAvatar = async (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные при обновлении аватара.'));
       } else {
-        next(err)
+        next(err => res.status(500).send({ message: err }))
       }
     }
 }
-
-
 
 const deleteUser = (req, res) => {
   User.findByIdAndRemove(req.params.id)
     .then((user)=> {
       if (!user) {
-       return res.status(404).send({message: 'Пользователь с id не найден'});
+       return res.status(400).send({message: 'Пользователь с id не найден'});
       }
       res.status(200).send({ data: user });
     })
