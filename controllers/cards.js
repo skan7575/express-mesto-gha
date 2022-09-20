@@ -29,7 +29,7 @@ const deleteCard = (req, res) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена.' });
       }
-      res.status(200).send({ message: 'Карточка удалена' });
+      return res.status(200).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

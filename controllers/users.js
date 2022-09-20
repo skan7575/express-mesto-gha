@@ -32,7 +32,7 @@ const readUserById = (req, res) => {
       res.status(errStatus).send({ message: err.message });
     });
 };
-const createUser = (req, res, next) => {
+const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => {
@@ -42,11 +42,11 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
-      next((err) => res.status(500).send({ message: err }));
+      return res.status(500).send({ message: err });
     });
 };
 
-const updateUser = async (req, res, next) => {
+const updateUser = async (req, res) => {
   const userId = req.user._id;
   const { name, about } = req.body;
   User.findOneAndUpdate({ name, about });
@@ -57,18 +57,18 @@ const updateUser = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (!user) {
-      res.status(404).send('Пользователь с id не найден');
+      return res.status(404).send('Пользователь с id не найден');
     }
-    res.status(200).send({ data: user });
+    return res.status(200).send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
     }
-    next((err) => res.status(500).send({ message: err }));
+    return res.status(500).send({ message: err });
   }
 };
 
-const updateAvatar = async (req, res, next) => {
+const updateAvatar = async (req, res) => {
   const userId = req.user._id;
   const { avatar } = req.body;
   User.findOneAndUpdate({ avatar });
@@ -79,15 +79,14 @@ const updateAvatar = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (!user) {
-      res.status(404).send('Пользователь с id не найден');
+      return res.status(404).send('Пользователь с id не найден');
     }
-    res.status(200).send({ data: user });
+    return res.status(200).send({ data: user });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new ValidationError('Переданы некорректные данные при обновлении аватара.'));
-    } else {
-      next((err) => res.status(500).send({ message: err }));
+      return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
     }
+    return res.status(500).send({ message: err });
   }
 };
 
