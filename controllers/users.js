@@ -34,7 +34,7 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(NOT_FOUND).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
