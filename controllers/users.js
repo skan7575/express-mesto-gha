@@ -95,23 +95,10 @@ const updateAvatar = async (req, res, next) => {
     }
 }
 
-const deleteUser = (req, res) => {
-  User.findByIdAndRemove(req.params.id)
-    .then((user)=> {
-      if (!user) {
-       return res.status(400).send({message: 'Пользователь с id не найден'});
-      }
-      res.status(200).send({ data: user });
-    })
-    .catch(err => res.status(500).send({ message: err }));
-};
-
-
 module.exports = {
   createUser,
   readUsers,
   readUserById,
-  deleteUser,
   updateUser,
   updateAvatar
 }
