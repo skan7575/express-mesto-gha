@@ -7,13 +7,13 @@ const createCard = (req, res) => {
 
   Card.create({name, link, owner})
     .then((card) => {
-      res.status(201).send({data: card})
+      return res.status(201).send({data: card})
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные при создании карточки.'});
+        return res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные при создании карточки.'});
       } else {
-        res.status(SERVER_ERROR).send({ message: 'произошла ошибка' });
+        return res.status(SERVER_ERROR).send({message: 'произошла ошибка'});
       }
     })
 }
@@ -32,15 +32,15 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
+        return res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
       }
       res.status(200).send({message: 'Карточка удалена'});
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
+        return res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные при удалении карточки.'});
       }
-      res.status(SERVER_ERROR).send({ message: 'произошла ошибка' })
+      return res.status(SERVER_ERROR).send({message: 'произошла ошибка'})
     })
 };
 
@@ -55,15 +55,15 @@ const addLikeCard = (req, res) => {
     {new: true})
     .then((data) => {
       if (!data) {
-        res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
+        return res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
       }
       return res.send(data);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные для постановки лайка'});
+        return res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные для постановки лайка'});
       }
-      res.status(SERVER_ERROR).send({ message: 'произошла ошибка' })
+      return res.status(SERVER_ERROR).send({message: 'произошла ошибка'})
     })
 };
 
@@ -78,15 +78,15 @@ const deleteLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
+        return res.status(NOT_FOUND).send({message: 'Карточка с указанным _id не найдена.'});
       }
-      res.send(card);
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные для снятия лайка'});
+        return res.status(BAD_REQUEST).send({message: 'Переданы некорректные данные для снятия лайка'});
       }
-      res.status(SERVER_ERROR).send({ message: 'произошла ошибка' })
+      return res.status(SERVER_ERROR).send({message: 'произошла ошибка'})
     })
 }
 
