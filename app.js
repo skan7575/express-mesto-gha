@@ -1,11 +1,11 @@
 // подключение express
-const express = require("express");
+const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
-const routerCards = require('./routes/cards')
+const routerCards = require('./routes/cards');
 // создаем объект приложения
-const {PORT = 3000} = process.env;
+const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(bodyParser.json());
@@ -15,18 +15,15 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6326eb50ad555905aca2ad65' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '6326eb50ad555905aca2ad65', // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
   next();
-})
+});
 
 app.use('/users', routerUsers);
-app.use('/cards', routerCards)
+app.use('/cards', routerCards);
 
-app.use('*', (req,res) => {
-  return res.status(404).send({message: 'Введен не коректный путь'});
-})
-
+app.use('*', (req, res) => res.status(404).send({ message: 'Введен не коректный путь' }));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

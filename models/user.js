@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     type: String, // имя — это строка
     minlength: 2, // минимальная длина имени — 2 символа
     required: true,
-  }
+  },
 });
 
 module.exports = mongoose.model('user', userSchema);

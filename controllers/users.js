@@ -1,4 +1,4 @@
-const User = require('../models/user')
+const User = require('../models/user');
 
 class ValidationError extends Error {
   constructor(message) {
@@ -10,13 +10,13 @@ class ValidationError extends Error {
 
 const readUsers = (req, res) => {
   User.find({})
-    .then((user)=> {
-      res.send({data: user})
+    .then((user) => {
+      res.send({ data: user });
     })
     .catch(() => {
-      res.status(500).send({ message: 'Объект не найден'})
-    })
-}
+      res.status(500).send({ message: 'Объект не найден' });
+    });
+};
 
 const readUserById = (req, res) => {
   let errStatus = 400;
@@ -26,32 +26,30 @@ const readUserById = (req, res) => {
       throw new ValidationError('Пользователь по указанному _id не найден.');
     })
     .then((user) => {
-      res.send({data: user})
+      res.send({ data: user });
     })
     .catch((err) => {
-      res.status(errStatus).send({message: err.message})
-    })
-}
+      res.status(errStatus).send({ message: err.message });
+    });
+};
 const createUser = (req, res, next) => {
-  const {name, about, avatar} = req.body;
-  User.create({name, about, avatar})
+  const { name, about, avatar } = req.body;
+  User.create({ name, about, avatar })
     .then((user) => {
-    res.send(user);
-  })
-    .catch((err)=> {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
-      }
-      next(err => res.status(500).send({ message: err }));
+      res.send(user);
     })
-
-
-}
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      }
+      next((err) => res.status(500).send({ message: err }));
+    });
+};
 
 const updateUser = async (req, res, next) => {
   const userId = req.user._id;
   const { name, about } = req.body;
-  User.findOneAndUpdate({name, about})
+  User.findOneAndUpdate({ name, about });
   try {
     const user = await User.findByIdAndUpdate(
       userId,
@@ -62,43 +60,41 @@ const updateUser = async (req, res, next) => {
       res.status(404).send('Пользователь с id не найден');
     }
     res.status(200).send({ data: user });
-  }
-  catch (err) {
+  } catch (err) {
     if (err.name === 'ValidationError') {
-      return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
+      return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
     }
-    next(err => res.status(500).send({ message: err }));
+    next((err) => res.status(500).send({ message: err }));
   }
-}
+};
 
 const updateAvatar = async (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
-  User.findOneAndUpdate({avatar})
-    try {
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { avatar},
-        { new: true, runValidators: true },
-      );
-      if (!user) {
-        res.status(404).send('Пользователь с id не найден');
-      }
-      res.status(200).send({ data: user });
-      }
-    catch (err) {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные при обновлении аватара.'));
-      } else {
-        next(err => res.status(500).send({ message: err }))
-      }
+  User.findOneAndUpdate({ avatar });
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar },
+      { new: true, runValidators: true },
+    );
+    if (!user) {
+      res.status(404).send('Пользователь с id не найден');
     }
-}
+    res.status(200).send({ data: user });
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new ValidationError('Переданы некорректные данные при обновлении аватара.'));
+    } else {
+      next((err) => res.status(500).send({ message: err }));
+    }
+  }
+};
 
 module.exports = {
   createUser,
   readUsers,
   readUserById,
   updateUser,
-  updateAvatar
-}
+  updateAvatar,
+};
