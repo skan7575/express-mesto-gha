@@ -1,13 +1,18 @@
+const { BAD_REQUEST, SERVER_ERROR, NOT_FOUND, UNAUTHORIZED_ERROR } = require('../errors/errors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const saltOrRounds = 10;
 const User = require('../models/user');
-const { BAD_REQUEST, SERVER_ERROR, NOT_FOUND } = require('../errors/errors');
 
-const readUsers = (req, res) => {
+
+const readUsers = (req, res, next) => {
   User.find({})
     .then((user) => {
       res.send({ data: user });
     })
-    .catch(() => {
-      res.status(SERVER_ERROR).send({ message: 'Объект не найден' });
+    .catch((err) => {
+      next(err)
+      // res.status(SERVER_ERROR).send({ message: 'Объект не найден' });
     });
 };
 
@@ -26,18 +31,45 @@ const readUserById = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден.' });
+      }
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      if (err.name === 'CastError') {
+        return res.status(BAD_REQUEST).send({ message: 'Невалидный id ' });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
+};
+
+const createUser = (req, res) => {
+  const {email, password, name, about, avatar } = req.body;
+  User.findOne({email})
+    .then((user) => {
+      if (user) {
+        return res.send("пользователь с таким email уже зарегистрирован!")
+      }
+
+      bcrypt.hash(password, saltOrRounds)
+        .then(hashPassword => {
+          User.create({email, password: hashPassword, name, about, avatar })
+            .then((user) => {
+              res.send(user);
+            })
+            .catch((err) => {
+              if (err.name === 'ValidationError') {
+                return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+              }
+              return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+            });
+        })
+    })
 };
 
 const updateUser = async (req, res) => {
@@ -82,10 +114,26 @@ const updateAvatar = async (req, res) => {
   }
 };
 
+
+const login = (req, res) => {
+  const { email, password } = req.body
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      res.send({
+        token: "Bearer " + jwt.sign({ _id: user._id }, 'PrivateKey', { expiresIn: '7d' }),
+      });
+    })
+    .catch((err) => {
+      res.status(UNAUTHORIZED_ERROR).send({ message: err.message });
+    });
+}
+
 module.exports = {
+  login,
   createUser,
   readUsers,
   readUserById,
   updateUser,
   updateAvatar,
+  getCurrentUser
 };
