@@ -18,11 +18,11 @@ const readUsers = (req, res, next) => {
 };
 
 const readUserById = (req, res, next) => {
-  const { id } = req.params;
-  User.findById(id)
-    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
-    .then((user) => {
-      res.send(user);
+  User.findById(req.params.userId)
+    .then((userId) => {
+      if (userId == null) {
+        throw new NotFoundError('Объект не найден');
+      } return res.send({ data: userId });
     })
     .catch(next);
 };
