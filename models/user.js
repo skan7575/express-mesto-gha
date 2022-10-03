@@ -1,6 +1,7 @@
 // models/user.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const {UserNotFoundError} = require("../errors/ErrorClass");
 const validatorEmail = require('validator').isEmail;
 const validatorUrl = require('validator').isURL;
 
@@ -47,13 +48,13 @@ userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new UserNotFoundError("Пользователь не найден"));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new UserNotFoundError("Пользователь не найден"));
           }
           return user;
         });
