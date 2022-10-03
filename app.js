@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
-const {NOT_FOUND, BAD_REQUEST} = require('./errors/error_codes')
-const {login, createUser} = require('./controllers/users')
-const auth = require('./middlewares/auth.js');
-const {handleErrors} = require('./middlewares/handleErrors')
+const { NOT_FOUND, BAD_REQUEST } = require('./errors/error_codes');
+const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+const { handleErrors } = require('./middlewares/handleErrors');
 // создаем объект приложения
 const { PORT = 3000 } = process.env;
 const app = express();

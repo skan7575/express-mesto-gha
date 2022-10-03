@@ -1,8 +1,13 @@
-const { NotFoundError, UserNotFoundError, SignUpError, ValidationError} = require('../errors/ErrorClass')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const {
+  NotFoundError,
+} = require('../errors/NotFoundError');
+const {
+  SignUpError,
+} = require('../errors/SignUpError');
+const { ValidationError } = require('../errors/ValidationError');
 const User = require('../models/user');
-
 
 const readUsers = (req, res, next) => {
   User.find({})
@@ -13,21 +18,20 @@ const readUsers = (req, res, next) => {
 };
 
 const readUserById = (req, res, next) => {
-  const {id} = req.params
-  console.log("readUserById " +id)
+  const { id } = req.params;
   User.findById(id)
     .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => {
       res.send(user);
     })
     .catch(next);
-}
+};
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw UserNotFoundError('Пользователь по указанному _id не найден.');
+        throw NotFoundError('Пользователь по указанному _id не найден.');
       }
       return res.send({ data: user });
     })
@@ -35,36 +39,34 @@ const getCurrentUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  {
-    const {
-      name, about, avatar, email, password,
-    } = req.body;
-    User.findOne({ email })
-      .then((user) => {
-        if (user) {
-          throw new SignUpError('Пользователь с данным email уже существует');
-        } return bcrypt.hash(password, 10);
-      })
-      .then((hash) => User.create({
-        name, about, avatar, email, password: hash,
-      }))
-      .then((newUser) => {
-        if (!newUser) {
-          return next(new NotFoundError('Объект не найден'));
-        } return res.send({
-          name: newUser.name,
-          about: newUser.about,
-          avatar: newUser.avatar,
-          email: newUser.email,
-          _id: newUser._id,
-        });
-      })
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new ValidationError('Введены не некорректные данные'));
-        } next(err);
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new SignUpError('Пользователь с данным email уже существует');
+      } return bcrypt.hash(password, 10);
+    })
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((newUser) => {
+      if (!newUser) {
+        return next(new NotFoundError('Объект не найден'));
+      } return res.send({
+        name: newUser.name,
+        about: newUser.about,
+        avatar: newUser.avatar,
+        email: newUser.email,
+        _id: newUser._id,
       });
-  };
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Введены не некорректные данные'));
+      } next(err);
+    });
 };
 
 const updateUser = async (req, res, next) => {
@@ -77,7 +79,7 @@ const updateUser = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (!user) {
-      throw UserNotFoundError('Пользователь по указанному _id не найден.');
+      throw NotFoundError('Пользователь по указанному _id не найден.');
     }
     return res.status(200).send({ data: user });
   } catch (err) {
@@ -86,6 +88,7 @@ const updateUser = async (req, res, next) => {
     }
     next(err);
   }
+  return res;
 };
 
 const updateAvatar = async (req, res, next) => {
@@ -98,7 +101,7 @@ const updateAvatar = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (!user) {
-      throw UserNotFoundError('Пользователь по указанному _id не найден.');
+      throw NotFoundError('Пользователь по указанному _id не найден.');
     }
     return res.status(200).send({ data: user });
   } catch (err) {
@@ -107,19 +110,19 @@ const updateAvatar = async (req, res, next) => {
     }
     next(err);
   }
+  return res;
 };
 
-
 const login = (req, res, next) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       res.send({
-        token: "Bearer " + jwt.sign({ _id: user._id }, 'PrivateKey', { expiresIn: '7d' }),
+        token: `Bearer ${jwt.sign({ _id: user._id }, 'PrivateKey', { expiresIn: '7d' })}`,
       });
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 module.exports = {
   login,
@@ -128,5 +131,5 @@ module.exports = {
   readUserById,
   updateUser,
   updateAvatar,
-  getCurrentUser
+  getCurrentUser,
 };

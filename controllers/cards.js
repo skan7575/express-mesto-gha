@@ -1,12 +1,14 @@
 const Card = require('../models/card');
-const { NotFoundError, ValidationError, ForbiddenError} = require('../errors/ErrorClass')
+const { NotFoundError } = require('../errors/NotFoundError');
+const { ValidationError } = require('../errors/ValidationError');
+const { ForbiddenError } = require('../errors/ForbiddenError');
 
 const createCard = (req, res, next) => {
-  const {name, link} = req.body;
+  const { name, link } = req.body;
   const owner = req.user._id;
 
-  Card.create({name, link, owner})
-    .then((card) => res.status(201).send({data: card}))
+  Card.create({ name, link, owner })
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Введены не некорректные данные'));
@@ -16,14 +18,13 @@ const createCard = (req, res, next) => {
 
 const readCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({data: cards}))
-    .catch(next)
+    .then((cards) => res.send({ data: cards }))
+    .catch(next);
 };
-
 
 const deleteCard = (req, res, next) => {
   const myId = req.user._id;
-  const {cardId} = req.params;
+  const { cardId } = req.params;
 
   Card.findById(cardId)
     .then((card) => {
@@ -35,13 +36,10 @@ const deleteCard = (req, res, next) => {
         throw new ForbiddenError('У вас недостаточно прав.');
       }
       Card.findByIdAndDelete(cardId)
-        .then((card) => {
-          return res.status(200).contentType('JSON').send({data: card})
-        })
-        .catch(next)
+        .then((cardSend) => res.status(200).contentType('JSON').send({ data: cardSend }))
+        .catch(next);
     })
-    .catch(next)
-
+    .catch(next);
 };
 
 const addLikeCard = (req, res, next) => {
@@ -50,9 +48,9 @@ const addLikeCard = (req, res, next) => {
     req.params.cardId,
     {
       $addToSet:
-        {likes: userId},
+        { likes: userId },
     },
-    {new: true},
+    { new: true },
   )
     .then((data) => {
       if (!data) {
@@ -60,17 +58,16 @@ const addLikeCard = (req, res, next) => {
       }
       return res.send(data);
     })
-    .catch(next)
+    .catch(next);
 };
-
 
 const deleteLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     {
-      $pull: {likes: req.user._id},
+      $pull: { likes: req.user._id },
     },
-    {new: true},
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -78,7 +75,7 @@ const deleteLikeCard = (req, res, next) => {
       }
       return res.send(card);
     })
-    .catch(next)
+    .catch(next);
 };
 
 module.exports = {

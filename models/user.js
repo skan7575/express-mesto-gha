@@ -1,12 +1,12 @@
 // models/user.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const {UserNotFoundError} = require("../errors/ErrorClass");
 const validatorEmail = require('validator').isEmail;
 const validatorUrl = require('validator').isURL;
+const { NotFoundError } = require('../errors/NotFoundError');
 
 const userSchema = new mongoose.Schema({
-  email : {
+  email: {
     unique: true,
     type: String,
     required: true,
@@ -15,27 +15,27 @@ const userSchema = new mongoose.Schema({
       message: 'указан неверный адрес почтового ящика',
     },
   },
-  password : {
+  password: {
     type: String,
     required: true,
-    select: false
+    select: false,
   },
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
-    default: "Жак-Ив Кусто"
+    default: 'Жак-Ив Кусто',
   },
   about: {
     type: String, // имя — это строка
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
-    default: "Исследователь"
+    default: 'Исследователь',
   },
   avatar: {
     type: String, // имя — это строка
     minlength: 2, // минимальная длина имени — 2 символа
-    default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator: (v) => validatorUrl(v),
       message: 'ошибка в ссылке',
@@ -48,13 +48,13 @@ userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new UserNotFoundError("Пользователь не найден"));
+        return Promise.reject(new NotFoundError('Пользователь не найден'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new UserNotFoundError("Пользователь не найден"));
+            return Promise.reject(new NotFoundError('Пользователь не найден'));
           }
           return user;
         });
