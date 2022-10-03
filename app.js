@@ -2,7 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { NOT_FOUND, BAD_REQUEST } = require('./errors/error_codes');
@@ -49,7 +49,9 @@ app.use('/cards', auth, routerCards);
 app.use('/users', auth, routerUsers);
 
 app.use(errorNotFound);
-app.use(handleErrors);
+app.use(errors());
+
+app.use((err, req, res, next) => { handleErrors(err, res, next); });
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
