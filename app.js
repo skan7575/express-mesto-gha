@@ -15,17 +15,6 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(bodyParser.json());
-// app.use((err, req, res, next) => {
-//   if (err) {
-//     res.status(BAD_REQUEST).send({ message: 'bad JSON' });
-//   } else {
-//     next();
-//   }
-// });
-
-// const errorNotFound = (req, res) => {
-//   res.status(NOT_FOUND).json({ message: 'Запрашиваемый ресурс не найден' });
-// };
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -51,7 +40,6 @@ app.use('/users', auth, routerUsers);
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Маршрут не найден'));
 });
-// app.use(errorNotFound);
 app.use(errors());
 
 app.use((err, req, res, next) => { handleErrors(err, res, next); });
