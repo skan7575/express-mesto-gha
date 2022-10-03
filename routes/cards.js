@@ -4,8 +4,6 @@ const {
   createCard, readCards, deleteCard, addLikeCard, deleteLikeCard,
 } = require('../controllers/cards');
 
-router.post('/', createCard);
-
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
