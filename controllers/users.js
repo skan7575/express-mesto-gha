@@ -8,6 +8,7 @@ const {
 } = require('../errors/SignUpError');
 const { ValidationError } = require('../errors/ValidationError');
 const User = require('../models/user');
+const { CastError } = require('../errors/CastError');
 
 const readUsers = (req, res, next) => {
   User.find({})
@@ -22,9 +23,14 @@ const readUserById = (req, res, next) => {
     .then((userId) => {
       if (userId == null) {
         throw new NotFoundError('Объект не найден');
-      } return res.send({ data: userId });
+      }
+      return res.send({ data: userId });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new CastError('Переданы некорректные данные'));
+      } else next(err);
+    });
 };
 
 const getCurrentUser = (req, res, next) => {
@@ -46,26 +52,25 @@ const createUser = (req, res, next) => {
     .then((user) => {
       if (user) {
         throw new SignUpError('Пользователь с данным email уже существует');
-      } return bcrypt.hash(password, 10);
+      }
+      return bcrypt.hash(password, 10);
     })
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((newUser) => {
-      if (!newUser) {
-        return next(new NotFoundError('Объект не найден'));
-      } return res.send({
-        name: newUser.name,
-        about: newUser.about,
-        avatar: newUser.avatar,
-        email: newUser.email,
-        _id: newUser._id,
-      });
-    })
+    .then((newUser) => res.send({
+      name: newUser.name,
+      about: newUser.about,
+      avatar: newUser.avatar,
+      email: newUser.email,
+      _id: newUser._id,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Введены не некорректные данные'));
-      } next(err);
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -85,8 +90,9 @@ const updateUser = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new ValidationError('Введены не некорректные данные'));
+    } else {
+      next(err);
     }
-    next(err);
   }
   return res;
 };
@@ -107,8 +113,9 @@ const updateAvatar = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new ValidationError('Введены не некорректные данные'));
+    } else {
+      next(err);
     }
-    next(err);
   }
   return res;
 };

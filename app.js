@@ -2,7 +2,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi, errors } = require('celebrate');
+const {
+  celebrate, Joi, errors,
+} = require('celebrate');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { NotFoundError } = require('./errors/NotFoundError');
@@ -40,6 +42,7 @@ app.use('/users', auth, routerUsers);
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Маршрут не найден'));
 });
+
 app.use(errors());
 
 app.use((err, req, res, next) => { handleErrors(err, res, next); });
