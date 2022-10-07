@@ -15,6 +15,12 @@ const { handleErrors } = require('./middlewares/handleErrors');
 const { PORT = 3000 } = process.env;
 const app = express();
 
+
+app.use(bodyParser.json());
+
+// подключаемся к серверу mongo
+mongoose.connect('mongodb://localhost:27017/mestodb');
+
 // Массив доменов, с которых разрешены кросс-доменные запросы
 const allowedCors = [
   'https://praktikum.tk',
@@ -40,10 +46,7 @@ app.use(function(req, res, next) {
   }
   next();
 });
-app.use(bodyParser.json());
 
-// подключаемся к серверу mongo
-mongoose.connect('mongodb://localhost:27017/mestodb');
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
