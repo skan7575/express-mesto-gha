@@ -8,7 +8,7 @@ const {
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { NotFoundError } = require('./errors/NotFoundError');
-// const { NOT_FOUND, BAD_REQUEST } = require('./errors/error_codes');
+const cors = require('cors')
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { handleErrors } = require('./middlewares/handleErrors');
@@ -22,16 +22,9 @@ const allowedCors = [
   'localhost:3000'
 ];
 
-app.use(function(req, res, next) {
-  const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
-  // проверяем, что источник запроса есть среди разрешённых
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  next();
-});
-
+app.use(cors({
+  origin: 'localhost:3000'
+}))
 app.use(bodyParser.json());
 
 // подключаемся к серверу mongo
