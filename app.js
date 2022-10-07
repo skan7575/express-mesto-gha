@@ -19,7 +19,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ["localhost:3000", "http://localhost:3000", "*", "http://localhost:3000/sign-up"]
+  origin: ["http://localhost:3000"],
 }))
 
 // подключаемся к серверу mongo
