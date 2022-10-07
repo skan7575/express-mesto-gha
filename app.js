@@ -23,7 +23,7 @@ const allowedCors = [
 ];
 
 app.use(cors({
-  origin: 'localhost:3000'
+  origin: '*'
 }))
 app.use(bodyParser.json());
 
