@@ -86,7 +86,7 @@ const updateUser = async (req, res, next) => {
     if (!user) {
       throw NotFoundError('Пользователь по указанному _id не найден.');
     }
-    return res.status(200).send({ data: user });
+    return res.status(200).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new ValidationError('Введены не некорректные данные'));
