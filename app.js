@@ -17,14 +17,14 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 
-app.use(bodyParser.json());
-app.use(cors({
-  origin: ["http://localhost:3000"],
-}))
-
-// подключаемся к серверу mongo
+// app.use(bodyParser.json());
+// app.use(cors({
+//   origin: ["http://localhost:3000"],
+// }))
+//
+// // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb');
-
+//
 // // Массив доменов, с которых разрешены кросс-доменные запросы
 // const allowedCors = [
 //   'https://praktikum.tk',
