@@ -11,6 +11,7 @@ const { NotFoundError } = require('./errors/NotFoundError');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { handleErrors } = require('./middlewares/handleErrors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('cors')
 // создаем объект приложения
 const { PORT = 3000 } = process.env;
@@ -25,7 +26,7 @@ app.use(cors({
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-
+app.use(requestLogger); // подключаем логгер запросов
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -48,6 +49,8 @@ app.use('/users', auth, routerUsers);
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Маршрут не найден'));
 });
+
+app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors());
 
