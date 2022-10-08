@@ -19,7 +19,7 @@ const createCard = (req, res, next) => {
 
 const readCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send( cards ))
     .catch(next);
 };
 
