@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const {
   celebrate, Joi, errors,
 } = require('celebrate');
+const cors = require('cors');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { NotFoundError } = require('./errors/NotFoundError');
@@ -12,16 +13,14 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { handleErrors } = require('./middlewares/handleErrors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const cors = require('cors')
 // создаем объект приложения
 const { PORT = 3000 } = process.env;
 const app = express();
 
-
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ["http://localhost:3000"],
-}))
+  origin: ['http://localhost:3000'],
+}));
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb');

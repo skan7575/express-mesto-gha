@@ -21,10 +21,10 @@ const readCards = (req, res, next) => {
   Card.find({})
     .populate('owner')
     .populate('likes')
-    .then((cards) => res.send( cards ))
+    .then((cards) => res.send(cards))
     .catch((err) => {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     });
 };
 
