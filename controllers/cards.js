@@ -9,7 +9,7 @@ const createCard = (req, res, next) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Введены не некорректные данные'));
@@ -37,7 +37,7 @@ const deleteCard = (req, res, next) => {
         throw new ForbiddenError('У вас недостаточно прав.');
       }
       Card.findByIdAndDelete(cardId)
-        .then((cardSend) => res.status(200).contentType('JSON').send({ data: cardSend }));
+        .then((cardSend) => res.status(200).contentType('JSON').send(cardSend));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
