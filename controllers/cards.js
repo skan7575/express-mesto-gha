@@ -19,8 +19,13 @@ const createCard = (req, res, next) => {
 
 const readCards = (req, res, next) => {
   Card.find({})
+    .populate('owner')
+    .populate('likes')
     .then((cards) => res.send( cards ))
-    .catch(next);
+    .catch((err) => {
+      console.log(err)
+      next(err)
+    });
 };
 
 const deleteCard = (req, res, next) => {
