@@ -61,6 +61,8 @@ const addLikeCard = (req, res, next) => {
     },
     { new: true },
   )
+    .populate('owner')
+    .populate('likes')
     .then((data) => {
       if (!data) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');
@@ -82,6 +84,8 @@ const deleteLikeCard = (req, res, next) => {
     },
     { new: true },
   )
+    .populate('owner')
+    .populate('likes')
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');
