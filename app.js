@@ -1,5 +1,5 @@
-// подключение express
 require('dotenv').config();
+// подключение express
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
