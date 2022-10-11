@@ -21,6 +21,8 @@ const readCards = (req, res, next) => {
   Card.find({})
     .populate('owner')
     .populate('likes')
+    .sort({ createdAt : 0 })
+    // .sort({ createdAt : 1 })
     .then((cards) => res.send(cards))
     .catch((err) => {
       console.log(err);
