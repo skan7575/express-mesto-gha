@@ -124,7 +124,7 @@ const login = (req, res, next) => {
     .then((user) => {
       res.send({
         token: `${jwt.sign({ _id: user._id },
-          (NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'), { expiresIn: '7d' })}`,
+          NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret-key', { expiresIn: '7d' })}`,
       });
     })
     .catch(next);
