@@ -19,7 +19,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', 'https://negachyov.nomoredomains.icu'],
 }));
 
 // подключаемся к серверу mongo
