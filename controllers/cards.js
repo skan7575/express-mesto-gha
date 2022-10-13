@@ -6,9 +6,9 @@ const { CastError } = require('../errors/CastError');
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
+  const owner = req.user._id;
 
-
-  Card.create({ name, link, owner: req.user._id })
+  Card.create({ name, link, owner })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -19,7 +19,6 @@ const createCard = (req, res, next) => {
 
 const readCards = (req, res, next) => {
   Card.find({})
-    .populate('owner')
     .populate('likes')
     .sort({ createdAt : -1 })
     .then((cards) => res.send(cards))
