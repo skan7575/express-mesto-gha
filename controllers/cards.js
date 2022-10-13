@@ -20,7 +20,7 @@ const createCard = (req, res, next) => {
 const readCards = (req, res, next) => {
   Card.find({})
     .populate('likes')
-    .sort({ createdAt : -1 })
+    .sort({ createdAt: -1 })
     .then((cards) => res.send(cards))
     .catch((err) => {
       console.log(err);

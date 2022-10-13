@@ -10,6 +10,7 @@ const {
 const { ValidationError } = require('../errors/ValidationError');
 const User = require('../models/user');
 const { CastError } = require('../errors/CastError');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const readUsers = (req, res, next) => {
@@ -61,7 +62,7 @@ const createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((newUser) => res.send(
-      {data: newUser}
+      { data: newUser },
     ))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -123,8 +124,11 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       res.send({
-        token: `${jwt.sign({ _id: user._id },
-          (NODE_ENV === 'production' ? JWT_SECRET : 'PrivateKey'), { expiresIn: '7d' })}`,
+        token: `${jwt.sign(
+          { _id: user._id },
+          (NODE_ENV === 'production' ? JWT_SECRET : 'PrivateKey'),
+          { expiresIn: '7d' },
+        )}`,
       });
     })
     .catch(next);

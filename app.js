@@ -28,8 +28,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(requestLogger); // подключаем логгер запросов
 app.get('/crash-test', () => {
   setTimeout(() => {
-    console.log(process.env.NODE_ENV);
-    console.log('АААА Сервер сейчас упадёт')
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
