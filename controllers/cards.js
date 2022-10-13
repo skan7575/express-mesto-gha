@@ -61,7 +61,6 @@ const addLikeCard = (req, res, next) => {
     },
     { new: true },
   )
-    .populate('owner')
     .populate('likes')
     .then((data) => {
       if (!data) {
@@ -84,7 +83,6 @@ const deleteLikeCard = (req, res, next) => {
     },
     { new: true },
   )
-    .populate('owner')
     .populate('likes')
     .then((card) => {
       if (!card) {
